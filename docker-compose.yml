@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  wordpress:
+    depends_on:
+      - mysql
+    image: wordpress:latest
+    ports:
+      - 8080:80
+    environment:
+      WORDPRESS_DB_PASSWORD: example
+    volumes:
+      - .:/var/www/html/wp-content/plugins/wpcf7-intercom
+
+  mysql:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: example
