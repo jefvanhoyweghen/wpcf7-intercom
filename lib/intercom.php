@@ -22,7 +22,7 @@ function wpcf7_intercom_create_conversation($obj)
 
     if ($cf7_intercom && $cf7_intercom['active']) {
 
-        $client = new IntercomClient($cf7_intercom["appId"], $cf7_intercom["apiKey"]);
+        $client = new IntercomClient($cf7_intercom["accessToken"], null);
 
         $regex = '/\[\s*([a-zA-Z_][0-9a-zA-Z:._-]*)\s*\]/';
         $email = cf7_intercom_tag_replace($regex, $cf7_intercom['email'], $posted_data);
@@ -90,15 +90,9 @@ function wpcf7_intercom_add_intercom($args)
 
 
             <p class="mail-field">
-                <label for="wpcf7-intercom-appId"><?php echo esc_html(__('Intercom App Id:', 'wpcf7')); ?> </label><br/>
-                <input type="text" id="wpcf7-intercom-appId" name="wpcf7-intercom[appId]" class="wide" size="70"
-                       value="<?php echo (isset($cf7_intercom['appId'])) ? esc_attr($cf7_intercom['appId']) : ''; ?>"/>
-            </p>
-
-            <p class="mail-field">
-                <label for="wpcf7-intercom-apiKey"><?php echo esc_html(__('Intercom API Key:', 'wpcf7')); ?> </label><br/>
-                <input type="text" id="wpcf7-intercom-apiKey" name="wpcf7-intercom[apiKey]" class="wide" size="70"
-                       value="<?php echo (isset($cf7_intercom['apiKey'])) ? esc_attr($cf7_intercom['apiKey']) : ''; ?>"/>
+                <label for="wpcf7-intercom-accessToken"><?php echo esc_html(__('Intercom Access Token:', 'wpcf7')); ?> </label><br/>
+                <input type="text" id="wpcf7-intercom-accessToken" name="wpcf7-intercom[accessToken]" class="wide" size="70"
+                       value="<?php echo (isset($cf7_intercom['accessToken'])) ? esc_attr($cf7_intercom['accessToken']) : ''; ?>"/>
             </p>
 
             <p class="mail-field">

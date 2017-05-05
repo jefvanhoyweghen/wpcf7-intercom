@@ -112,6 +112,25 @@ class IntercomClient
     }
 
     /**
+     * Sends PUT request to Intercom API.
+     * @param string $endpoint
+     * @param string $json
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function put($endpoint, $json)
+    {
+        $response = $this->http_client->request('PUT', "https://api.intercom.io/$endpoint", [
+            'json' => $json,
+            'auth' => $this->getAuth(),
+            'headers' => [
+                'Accept' => 'application/json'
+            ]
+        ]);
+        return $this->handleResponse($response);
+    }
+
+    /**
      * Sends DELETE request to Intercom API.
      * @param string $endpoint
      * @param string $json
@@ -132,7 +151,7 @@ class IntercomClient
 
     /**
      * @param string $endpoint
-     * @param string $query
+     * @param array $query
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -150,13 +169,13 @@ class IntercomClient
 
     /**
      * Returns next page of the result.
-     * @param array $pages
+     * @param \stdClass $pages
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function nextPage($pages)
     {
-        $response = $this->http_client->request('GET', $pages['next'], [
+        $response = $this->http_client->request('GET', $pages->next, [
             'auth' => $this->getAuth(),
             'headers' => [
                 'Accept' => 'application/json'
@@ -181,7 +200,7 @@ class IntercomClient
     private function handleResponse(Response $response)
     {
         $stream = stream_for($response->getBody());
-        $data = json_decode($stream->getContents());
+        $data = json_decode($stream);
         return $data;
     }
 }

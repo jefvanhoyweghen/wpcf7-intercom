@@ -1,5 +1,5 @@
 {
-  "name": "outsite/wpcf7-intercom",
+  "name": "jefvanhoyweghen/wpcf7-intercom",
   "type": "wordpress-plugin",
   "require": {
     "intercom/intercom-php": "^3.1"

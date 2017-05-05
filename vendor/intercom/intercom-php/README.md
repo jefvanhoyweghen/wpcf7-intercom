@@ -32,27 +32,30 @@ require "vendor/autoload.php";
 ```
 
 ## Clients
-
-```php
-use Intercom\IntercomClient;
-
-$client = new IntercomClient(appId, apiKey);
-```
-
-Or if using an OAuth or Personal Access Token use:
+For OAuth or Access Tokens use:
 
 ```php
 use Intercom\IntercomClient;
 
 $client = new IntercomClient(<insert_token_here>, null);
 ```
+> If you already have an access token you can find it [here](https://app.intercom.com/developers/_). If you want to create or learn more about access tokens then you can find more info [here](https://developers.intercom.io/docs/personal-access-tokens).
+
+If you are building a third party application you can get your OAuth token by [setting-up-oauth](https://developers.intercom.io/page/setting-up-oauth) for Intercom.
 
 ## Users
 
 ```php
-// Create/update a user
+// Create a user
 $client->users->create([
-  "email" => "test@intercom.io"
+  "email" => "test@intercom.io",
+  "custom_attributes" => ['foo' => 'bar']
+]);
+
+// Update a user (Note: This method is an alias to the create method. In practice you can use create to update users if you wish)
+$client->users->update([
+  "email" => "test@intercom.io",
+  "custom_attributes" => ['foo' => 'bar']
 ]);
 
 // Delete a user by ID
@@ -66,24 +69,44 @@ $client->users->create([
   "email" => "test@intercom.io",
   "companies" => [
     [
-      "id" => "3"
+      "company_id" => "3"
     ]
   ]
 ]);
 
-// Find a single user by email 
+// Remove companies from a user
+$client->users->create([
+  "email" => "test@intercom.io",
+  "companies" => [
+    [
+      "company_id" => "3",
+      "remove" => true
+    ]
+  ]
+]);
+
+// Find a single user by email
 $client->users->getUsers(["email" => "bob@intercom.io"]);
 
-// List all users 
+// List all users
 $client->users->getUsers([]);
 ```
 
 ## Leads
 
 ```php
-// Create/update a lead
+// Create a lead
 // See more options here: https://developers.intercom.io/reference#create-lead
-$client->leads->create([]);
+$client->leads->create([
+  "email" => "test@intercom.io",
+  "custom_attributes" => ['foo' => 'bar']
+]);
+
+// Update a lead (Note: This method is an alias to the create method. In practice you can use create to update leads if you wish)
+$client->leads->update([
+  "email" => "test@intercom.io",
+  "custom_attributes" => ['foo' => 'bar']
+]);
 
 // List leads
 // See more options here: https://developers.intercom.io/reference#list-leads
@@ -126,7 +149,7 @@ $client->tags->tag([
 
 ```php
 // List Segments
-$client->tags->getSegments();
+$client->segments->getSegments();
 ```
 
 
@@ -149,6 +172,11 @@ $client->events->getEvents(["email" => "bob@intercom.io"]);
 ```php
 // Create a company
 $client->companies->create([
+  "name" => "foocorp", "company_id" => "3"
+]);
+
+// Update a company (Note: This method is an alias to the create method. In practice you can use create to update companies if you wish)
+$client->companies->update([
   "name" => "foocorp", "id" => "3"
 ]);
 
@@ -204,6 +232,19 @@ $client->conversations->replyToConversation("5678", [
   "type" => "user",
   "message_type" => "comment"
 ]);
+
+//Reply to a user's last conversation
+// See more options here: https://developers.intercom.com/reference#replying-to-users-last-conversation
+$client->conversations->replyToLastConversation([
+  "email" => "test@intercom.io",
+  "body" => "Thanks :)",
+  "type" => "user",
+  "message_type" => "comment"
+]);
+
+// Mark a conversation as read
+// See API documentation here: https://developers.intercom.io/reference#marking-a-conversation-as-read
+$client->conversations->markConversationAsRead("7890");
 ```
 
 ## Counts
@@ -272,9 +313,32 @@ When listing, the Intercom API may return a pagination object:
 You can grab the next page of results using the client:
 
 ```php
-$client->nextPage($response["pages"]);
+$client->nextPage($response->pages);
 ```
 
+
+## Exceptions
+
+Exceptions are handled by [Guzzle](https://github.com/guzzle/guzzle).
+The Intercom API may return an unsuccessful HTTP response, for example when a resource is not found (404).
+If you want to catch errors you can wrap your API call into a try/catch:
+
+```php
+use GuzzleHttp\Exception\ClientException;
+
+try {
+  $user = $client->users->getUser("570680a8a1bcbca8a90001b9");
+} catch(ClientException $e) {
+  $response = $e->getResponse();
+  $statusCode = $response->getStatusCode();
+  if ($statusCode == '404') {
+    // Handle 404 error
+    return;
+  } else {
+    throw $e;
+  }
+}
+```
 
 ## Pull Requests
 
