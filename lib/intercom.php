@@ -1,9 +1,6 @@
 <?php
 /**
- * Created by IntelliJ IDEA.
- * User: stijnbe
- * Date: 02/12/2016
- * Time: 18:57
+ * jefvanhoyweghen
  */
 require WPCF7_INTERCOM_PLUGIN_DIR . "/vendor/autoload.php";
 
@@ -31,17 +28,10 @@ function wpcf7_intercom_create_conversation($obj)
         $message = cf7_intercom_tag_replace($regex, $cf7_intercom['message'], $posted_data);
         $message = $message_subject . "\n" . $message;
 
-        //make sure the lead exists
-        $lead = null;
-        $lead_results = $client->leads->getLeads(["email" => $email]);
-        if(count($lead_results->contacts) > 0){
-            $lead = $lead_results->contacts[0];
-        } else {
-            $lead = $client->leads->create([
-                "email" => $email,
-                "name" => $name
-            ]);
-        }
+        $lead = $client->leads->create([
+            "email" => $email,
+            "name" => $name
+        ]);
         $client->messages->create([
             "message_type" => "inapp",
             "body" => $message,
